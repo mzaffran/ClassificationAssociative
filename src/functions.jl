@@ -7,7 +7,8 @@ Function used to transform a column with numerical values into one or several bi
 Arguments:
  - data: table which contains the column that will be binarized (1 row = 1 individual, 1 column = 1 feature);
  - header: header of the column of data that will be binarized
- - intervals: array of values which delimits the binarization (ex : [2, 4, 6, 8] will lead to 3 columns respectively equal to 1 if the value of column "header" is in [2, 3], [4, 5] and [6, 7])
+ - intervals: array of values which delimits the binarization (ex : [2, 4, 6, 8] will lead to 3 columns respectively equal to 1 if the value of column "header"
+ is in [2, 3], [4, 5] and [6, 7])
 
  Example:
   createColumns(:Age, [1, 17, 50, Inf], data, features) will create 3 binary columns in features named "Age1-16", "Age17-49", "Age50-Inf"
@@ -16,7 +17,7 @@ function createColumns(header::Symbol, intervals, data::DataFrames.DataFrame, fe
     for i in 1:size(intervals, 1) - 1
         lb = intervals[i]
         ub = intervals[i+1]
-        features[!, Symbol(header, lb, "-", (ub-1))] = ifelse.((data[!, header] .>= lb) .& (data[!, header] .< ub), 1, 0) 
+        features[!, Symbol(header, lb, "-", (ub-1))] = ifelse.((data[!, header] .>= lb) .& (data[!, header] .< ub), 1, 0)
     end
 end
 
@@ -54,7 +55,7 @@ function createFeatures(dataFolder::String, dataSet::String)
 
         # Create the table that will contain the features
         features::DataFrame = DataFrames.DataFrame()
-        
+
         # Create the features of the titanic data set
         if dataSet == "titanic"
 
@@ -67,21 +68,21 @@ function createFeatures(dataFolder::String, dataSet::String)
             # -> 3 columns ([0, 16], [17, 49], [50, +infinity[)
             # Ex : if the age is 20, the value of these 3 columns will be 0, 1 and 0, respectively.
             createColumns(:Age, [0, 17, 50, Inf], rawData, features)
-            
+
             # Add columns related to the fares
             # -> 3 columns ([0, 9], [10, 19], [20, +infinity[)
             createColumns(:Fare,  [0, 10, 20, Inf], rawData, features)
-            
+
             #### First example of the binarization of a column with categorical values
             # Add 1 column for the sex (female or not)
             # Detailed description of the command:
             # - create in DataFrame "features" a column named "Sex"
             # - for each row of index i of "rawData", if column "Sex" is equal to "female", set the value of column "Sex" in row i of features to 1; otherwise set it to 0
             features.Sex = ifelse.(rawData.Sex .== "female", 1, 0)
-            
+
             # Add columns related to the passenger class
             # -> 3 columns (class 1, class 2 and class 3)
-            
+
             # For each existing value in the column "Pclass"
             for a in sort(unique(rawData.Pclass))
 
@@ -100,11 +101,11 @@ function createFeatures(dataFolder::String, dataSet::String)
 
             #TODO
 
-        end 
-        
+        end
+
         if dataSet == "other"
             #TODO
-        end 
+        end
 
         # Shuffle the individuals
         features = features[shuffle(1:size(features, 1)),:]
@@ -113,7 +114,7 @@ function createFeatures(dataFolder::String, dataSet::String)
         trainLimit = trunc(Int, size(features, 1) * 2/3)
         train = features[1:trainLimit, :]
         test = features[(trainLimit+1):end, :]
-        
+
         CSV.write(trainDataPath, train)
         CSV.write(testDataPath, test)
 
@@ -124,13 +125,13 @@ function createFeatures(dataFolder::String, dataSet::String)
         train = CSV.read(trainDataPath)
         test = CSV.read(testDataPath)
     end
-    
+
     println("=== ... ", size(train, 1), " individuals in the train set")
     println("=== ... ", size(test, 1), " individuals in the test set")
     println("=== ... ", size(train, 2), " features")
-    
+
     return train, test
-end 
+end
 
 
 """
@@ -153,7 +154,7 @@ function createRules(dataSet::String, resultsFolder::String, train::DataFrames.D
     if !isfile(rulesPath)
 
         println("=== Generating the rules")
-        
+
         # Transactions
         t::DataFrame = train[:, 2:end]
 
@@ -173,7 +174,7 @@ function createRules(dataSet::String, resultsFolder::String, train::DataFrames.D
         iterlim::Int64 = 5
         RgenX::Float64 = 0.1 / n
         RgenB::Float64 = 0.1 / (n * d)
-        
+
         cmax::Int64 = n
         iter::Int64 = 1
         ##################
@@ -202,7 +203,7 @@ function createRules(dataSet::String, resultsFolder::String, train::DataFrames.D
             # - if it is the first rule, use: rules = rule
             # - if it is not the first rule, use: rules = append!(rules, rule)
         end
-        
+
         CSV.write(rulesPath, rules)
 
     else
@@ -210,8 +211,8 @@ function createRules(dataSet::String, resultsFolder::String, train::DataFrames.D
         println("=== Loading the existing rules")
         rules = CSV.read(rulesPath)
     end
-    
-    println("=== ... ", size(rules, 1), " rules obtained") 
+
+    println("=== ... ", size(rules, 1), " rules obtained")
 
     return rules
 end
@@ -233,7 +234,7 @@ function sortRules(dataSet::String, resultsFolder::String, train::DataFrames.Dat
     if !isfile(orderedRulesPath)
 
         println("=== Sorting the rules")
-        
+
         # Transactions
         t = train[:, 2:end]
 
@@ -281,7 +282,7 @@ function sortRules(dataSet::String, resultsFolder::String, train::DataFrames.Dat
                     if transactionClass[i, 1] == rules[l, 1]
                         p[i, l] = 1
                     else
-                        p[i, l] = -1 
+                        p[i, l] = -1
                     end
                 end
             end
@@ -291,10 +292,10 @@ function sortRules(dataSet::String, resultsFolder::String, train::DataFrames.Dat
 
         ################
         # Create and solve the model
-        ###############        
+        ###############
         m = Model(with_optimizer(CPLEX.Optimizer))
         set_parameter(m, "CPX_PARAM_TILIM", tilim)
-        
+
         # u_il: rule l is the highest which applies to transaction i
         @variable(m, u[1:n, 1:L], Bin)
 
@@ -334,7 +335,7 @@ function sortRules(dataSet::String, resultsFolder::String, train::DataFrames.Dat
 
         # Relaxation improvement
         @constraint(m, [i in 1:n, l in 1:L], u[i, l] >= 1 - g[i] + v[i, l] * r[l])
-        @constraint(m, [i in 1:n, l in 1:L], u[i, l] <= v[i, l]) 
+        @constraint(m, [i in 1:n, l in 1:L], u[i, l] <= v[i, l])
 
         # r constraints
         @constraint(m, [k in 1:L], sum(s[l, k] for l in 1:L) == 1)
@@ -375,14 +376,14 @@ function sortRules(dataSet::String, resultsFolder::String, train::DataFrames.Dat
         println("=== Warning: Sorted rules found, sorting of the rules skipped")
         println("=== Loading the sorting rules")
         orderedRules = CSV.read(orderedRulesPath)
-    end 
+    end
 
     return orderedRules
 
 end
 
 """
-Compute for a given data set the precision and the recall of 
+Compute for a given data set the precision and the recall of
 - each class
 - the whole data set (with and without weight for each class)
 
@@ -392,7 +393,7 @@ Arguments
 """
 function showStatistics(orderedRules::DataFrames.DataFrame, dataSet::DataFrames.DataFrame)
 
-    
+
     # Number of transactions
     n = size(dataSet, 1)
 
@@ -408,7 +409,7 @@ function showStatistics(orderedRules::DataFrames.DataFrame, dataSet::DataFrames.
 
     # Number of individuals in each class
     classSize = Array{Int, 1}([0, 0])
-    
+
     # For all transaction i in the data set
     for i in 1:n
 
@@ -425,7 +426,7 @@ function showStatistics(orderedRules::DataFrames.DataFrame, dataSet::DataFrames.
             else
                 tn += 1
                 classSize[2] += 1
-            end 
+            end
 
             # If it is a negative
         else
@@ -437,10 +438,10 @@ function showStatistics(orderedRules::DataFrames.DataFrame, dataSet::DataFrames.
             else
                 fp += 1
                 classSize[2] += 1
-            end 
+            end
         end
     end
-    
+
     precision = Array{Float64, 1}([tp / (tp+fp), tn / (tn+fn)])
     recall = Array{Float64, 1}([tp / (tp + fn), tn / (tn + fp)])
 
@@ -449,5 +450,5 @@ function showStatistics(orderedRules::DataFrames.DataFrame, dataSet::DataFrames.
     println("1\t", round(precision[2], digits=2), "\t", round(recall[2], digits=2), "\t", classSize[2], "\n")
     println("avg\t", round((precision[1] + precision[2])/2, digits=2), "\t", round((recall[1] + recall[2])/2, digits=2))
     println("w. avg\t", round(precision[1] * classSize[1] / size(dataSet, 1) + precision[2] * classSize[2] / size(dataSet, 1), digits = 2), "\t", round(recall[1] * classSize[1] / size(dataSet, 1) + recall[2] * classSize[2] / size(dataSet, 1), digits = 2), "\n")
-    
-end 
+
+end
