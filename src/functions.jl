@@ -174,13 +174,28 @@ function createRules(dataSet::String, resultsFolder::String, train::DataFrames.D
         RgenX::Float64 = 0.1 / n
         RgenB::Float64 = 0.1 / (n * d)
         
+        cmax::Int64 = n
+        iter::Int64 = 1
         ##################
         # Find the rules for each class
         ##################
         for y = 0:1
 
             println("-- Classe $y")
+            m=model(with_optimizer(CPLEX.Optimizer))
+            set_parameter(m, "CPX_PARAM_TILIM",300)
+            @variable(m,x[i in 1:n])
+            @variable(m,b[i in 1:d])
 
+            @constraint(m, [i=1:n,j=1:d if transactionClass[i,1]==y ], x[i]<=1+(t[i,j]-1)*b[j])
+
+            while cmax>n*mincovy
+                if iter==1
+
+
+                end
+
+            end
             #TODO
 
             # Help: Let rule be a rule that you want to add to rules
