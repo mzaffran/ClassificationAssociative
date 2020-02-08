@@ -174,25 +174,88 @@ function createRules(dataSet::String, resultsFolder::String, train::DataFrames.D
         iterlim::Int64 = 5
         RgenX::Float64 = 0.1 / n
         RgenB::Float64 = 0.1 / (n * d)
-
+        s::Float64 = 0
         cmax::Int64 = n
         iter::Int64 = 1
         ##################
         # Find the rules for each class
         ##################
+
+        bopt = Array{Int64}(zeros(d))
+        rule= Array{Int64}(zeros(d+1))
+        xopt = Array{Int64}(zeros(n))
+        
         for y = 0:1
+            cmax=n
+            s=0
 
             println("-- Classe $y")
-            m=model(with_optimizer(CPLEX.Optimizer))
-            set_parameter(m, "CPX_PARAM_TILIM",300)
-            @variable(m,x[i in 1:n])
-            @variable(m,b[i in 1:d])
 
-            @constraint(m, [i=1:n,j=1:d if transactionClass[i,1]==y ], x[i]<=1+(t[i,j]-1)*b[j])
+            m=Model(with_optimizer(CPLEX.Optimizer))
+            set_parameter(m,"CPX_PARAM_SCRIND",0)
+            set_parameter(m, "CPX_PARAM_TILIM",300)
+            @variable(m,x[i in 1:n], Bin)
+            @variable(m,b[i in 1:d] , Bin)
+
+            @constraint(m, [i=1:n,j=1:d  ], x[i]<=1+(t[i,j]-1)*b[j]) # Si b[j] est dans la regle et i ne satisfait pas b[j] => x[i] = 0
+            @constraint(m, [i=1:n  ], x[i]>=1+sum( (t[i,j]-1)*b[j] for j in 1:d )) # Si  i satisfat b => x[i]=1  
+            @constraint(m , couverture, sum(x[i] for  i in 1:n ) <=cmax )  # couverture
+
+            @objective(m, Max, sum( x[i] for i in 1:n if transactionClass[i,1]==y )- RgenX*sum( x[i] for i in 1:n ) -RgenB*sum(b[j] for j in 1:d) )
 
             while cmax>n*mincovy
+                
                 if iter==1
+                    println(iter)
+                    optimize!(m)
+                    
+                    bopt=JuMP.value.(b)
+                    rule=[y]
+                    append!(rule,bopt)
+                    xopt=JuMP.value.(x)
+                    s = JuMP.objective_value(m)
+                    println(cmax, " ", sum(xopt[i] for i=1:n))
 
+                    iter+=1
+                end
+
+                #rule= convert(DataFrame,bopt)
+                #println(rule)
+
+                push!(rules,rule)
+                
+                @constraint(m, sum(b[j] for j=1:d if bopt[j]==0) + sum(1-b[j] for j=1:d if bopt[j] ==1 ) >=1 ) # 
+
+                if iter < iterlim 
+                    println(iter)
+                    optimize!(m)
+
+                    bopt=JuMP.value.(b)
+                    rule=[y]
+                    append!(rule,bopt)
+                    xopt=JuMP.value.(x)
+                    obj= JuMP.objective_value(m)  
+                    println(cmax, " ", sum(xopt[i] for i=1:n))
+                    
+                    if obj < s
+                        
+                        cmax=min(cmax-1, sum(xopt[i] for i=1:n ))
+                        
+                        iter =1
+                        
+                        JuMP.set_normalized_rhs(m[:couverture],cmax)
+                        
+                        
+                    else
+
+                        iter+=1
+                    end
+                else
+                    
+                    cmax-=1
+                    iter=1
+                    JuMP.set_normalized_rhs(couverture,cmax)
+  
 
                 end
 
@@ -204,17 +267,26 @@ function createRules(dataSet::String, resultsFolder::String, train::DataFrames.D
             # - if it is not the first rule, use: rules = append!(rules, rule)
         end
 
-        CSV.write(rulesPath, rules)
+        df = train[1:1,:] 
+        
+        
+        for i=1:size(rules,1)
+            
+            push!(df,rules[i])
+        end
+        df=df[2:size(df,2),:]
+
+        CSV.write(rulesPath, df)
 
     else
         println("=== Warning: Existing rules found, rules creation skipped")
         println("=== Loading the existing rules")
-        rules = CSV.read(rulesPath)
+        df = CSV.read(rulesPath)
     end
 
-    println("=== ... ", size(rules, 1), " rules obtained")
+    println("=== ... ", size(df, 1), " rules obtained")
 
-    return rules
+    return df
 end
 
 """
