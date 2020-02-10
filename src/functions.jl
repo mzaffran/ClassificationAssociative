@@ -145,11 +145,11 @@ function createFeatures(dataFolder::String, dataSet::String)
             createColumns(:bu, [0, 25, 50, 75, 100, 125, 150, 175, 200, 225, 250, Inf], rawData, features)
             #createColumns(:sc, [0, 100, 125, 150, 175, 200, 250, 300, 400, 450, Inf], rawData, features)
             createColumns(:sod, [0, 115, 120, 125, 130, 135, 140, 145, Inf], rawData, features)
-            #createColumns(:pot, [0, 100, 125, 150, 175, 200, 250, 300, 400, 450, Inf], rawData, features)
-            #createColumns(:hemo, [0, 100, 125, 150, 175, 200, 250, 300, 400, 450, Inf], rawData, features)
-            #createColumns(:pcv, [0, 100, 125, 150, 175, 200, 250, 300, 400, 450, Inf], rawData, features)
+            createColumns(:pot, [0, 5, 10, Inf], rawData, features)
+            createColumns(:hemo, [0, 4, 6, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, Inf], rawData, features)
+            createColumns(:pcv, [0, 10, 20, 25, 30, 35, 40, 45, 50, Inf], rawData, features)
             #createColumns(:wbcc, [0, 100, 125, 150, 175, 200, 250, 300, 400, 450, Inf], rawData, features)
-            #createColumns(:rbcc, [0, 100, 125, 150, 175, 200, 250, 300, 400, 450, Inf], rawData, features)
+            createColumns(:rbcc, [0, 2.5, 3, 3.5, 4, 4.5, 5, 5.5, 6, 6.5, 7, Inf], rawData, features)
 
         end
 
