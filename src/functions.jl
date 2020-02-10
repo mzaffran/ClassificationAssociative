@@ -99,7 +99,57 @@ function createFeatures(dataFolder::String, dataSet::String)
 
         if dataSet == "kidney"
 
-            #TODO
+            # Add the column related to the class
+            # ckd (ill) is represented by 1, notckd by 0
+            features.Class = ifelse.(rawData.class .== "ckd", 1, 0)
+
+            createColumns(:age, [0, 15, 20, 30, 40, 50, 60, 70, 80, Inf], rawData, features)
+
+            # Categorical features
+
+            features.PC = ifelse.(rawData.pc .== "abnormal", 1, 0)
+            features.PCC = ifelse.(rawData.pcc .== "present", 1, 0)
+            features.BA = ifelse.(rawData.ba .== "present", 1, 0)
+            features.HTN = ifelse.(rawData.htn .== "yes", 1, 0)
+            features.DM = ifelse.(rawData.dm .== "yes", 1, 0)
+            features.CAD = ifelse.(rawData.cad .== "yes", 1, 0)
+            features.PE = ifelse.(rawData.pe .== "yes", 1, 0)
+            features.ANE = ifelse.(rawData.ane .== "yes", 1, 0)
+            features.APPET = ifelse.(rawData.appet .== "good", 1, 0)
+
+            # Discrete features
+
+            for a in sort(unique(rawData.bp))
+                # Create 1 feature column named "BP50", "BP60", "BP70", "BP80", "BP90", "BP100" or "BP110"
+                features[!, Symbol("BP", a)] = ifelse.(rawData.bp .<= a, 1, 0)
+            end
+
+            for a in sort(unique(rawData.sg))
+                # Create 1 feature column named "SG05", "SG1", "SG15", "SG2" or "SG25"
+                features[!, Symbol("SG", a)] = ifelse.(rawData.sg .<= a, 1, 0)
+            end
+
+            for a in sort(unique(rawData.al))
+                # Create 1 feature column named "AL0", "AL1", "AL2", "AL3" or "AL4"
+                features[!, Symbol("AL", a)] = ifelse.(rawData.al .<= a, 1, 0)
+            end
+
+            for a in sort(unique(rawData.su))
+                # Create 1 feature column named "SU0", "SU1", "SU2", "SU3", "SU4" or "SU5"
+                features[!, Symbol("SU", a)] = ifelse.(rawData.su .<= a, 1, 0)
+            end
+
+            # Continuous features
+
+            createColumns(:bgr, [0, 100, 125, 150, 175, 200, 250, 300, 400, 450, Inf], rawData, features)
+            createColumns(:bu, [0, 25, 50, 75, 100, 125, 150, 175, 200, 225, 250, Inf], rawData, features)
+            #createColumns(:sc, [0, 100, 125, 150, 175, 200, 250, 300, 400, 450, Inf], rawData, features)
+            createColumns(:sod, [0, 115, 120, 125, 130, 135, 140, 145, Inf], rawData, features)
+            #createColumns(:pot, [0, 100, 125, 150, 175, 200, 250, 300, 400, 450, Inf], rawData, features)
+            #createColumns(:hemo, [0, 100, 125, 150, 175, 200, 250, 300, 400, 450, Inf], rawData, features)
+            #createColumns(:pcv, [0, 100, 125, 150, 175, 200, 250, 300, 400, 450, Inf], rawData, features)
+            #createColumns(:wbcc, [0, 100, 125, 150, 175, 200, 250, 300, 400, 450, Inf], rawData, features)
+            #createColumns(:rbcc, [0, 100, 125, 150, 175, 200, 250, 300, 400, 450, Inf], rawData, features)
 
         end
 
@@ -184,7 +234,7 @@ function createRules(dataSet::String, resultsFolder::String, train::DataFrames.D
         bopt = Array{Int64}(zeros(d))
         rule= Array{Int64}(zeros(d+1))
         xopt = Array{Int64}(zeros(n))
-        
+
         for y = 0:1
             cmax=n
             s=0
@@ -198,17 +248,17 @@ function createRules(dataSet::String, resultsFolder::String, train::DataFrames.D
             @variable(m,b[i in 1:d] , Bin)
 
             @constraint(m, [i=1:n,j=1:d  ], x[i]<=1+(t[i,j]-1)*b[j]) # Si b[j] est dans la regle et i ne satisfait pas b[j] => x[i] = 0
-            @constraint(m, [i=1:n  ], x[i]>=1+sum( (t[i,j]-1)*b[j] for j in 1:d )) # Si  i satisfat b => x[i]=1  
+            @constraint(m, [i=1:n  ], x[i]>=1+sum( (t[i,j]-1)*b[j] for j in 1:d )) # Si  i satisfat b => x[i]=1
             @constraint(m , couverture, sum(x[i] for  i in 1:n ) <=cmax )  # couverture
 
             @objective(m, Max, sum( x[i] for i in 1:n if transactionClass[i,1]==y )- RgenX*sum( x[i] for i in 1:n ) -RgenB*sum(b[j] for j in 1:d) )
 
             while cmax>n*mincovy
-                
+
                 if iter==1
                     println(iter)
                     optimize!(m)
-                    
+
                     bopt=JuMP.value.(b)
                     rule=[y]
                     append!(rule,bopt)
@@ -223,10 +273,10 @@ function createRules(dataSet::String, resultsFolder::String, train::DataFrames.D
                 #println(rule)
 
                 push!(rules,rule)
-                
-                @constraint(m, sum(b[j] for j=1:d if bopt[j]==0) + sum(1-b[j] for j=1:d if bopt[j] ==1 ) >=1 ) # 
 
-                if iter < iterlim 
+                @constraint(m, sum(b[j] for j=1:d if bopt[j]==0) + sum(1-b[j] for j=1:d if bopt[j] ==1 ) >=1 ) #
+
+                if iter < iterlim
                     println(iter)
                     optimize!(m)
 
@@ -234,28 +284,28 @@ function createRules(dataSet::String, resultsFolder::String, train::DataFrames.D
                     rule=[y]
                     append!(rule,bopt)
                     xopt=JuMP.value.(x)
-                    obj= JuMP.objective_value(m)  
+                    obj= JuMP.objective_value(m)
                     println(cmax, " ", sum(xopt[i] for i=1:n))
-                    
+
                     if obj < s
-                        
+
                         cmax=min(cmax-1, sum(xopt[i] for i=1:n ))
-                        
+
                         iter =1
-                        
+
                         JuMP.set_normalized_rhs(m[:couverture],cmax)
-                        
-                        
+
+
                     else
 
                         iter+=1
                     end
                 else
-                    
+
                     cmax-=1
                     iter=1
                     JuMP.set_normalized_rhs(couverture,cmax)
-  
+
 
                 end
 
@@ -267,11 +317,11 @@ function createRules(dataSet::String, resultsFolder::String, train::DataFrames.D
             # - if it is not the first rule, use: rules = append!(rules, rule)
         end
 
-        df = train[1:1,:] 
-        
-        
+        df = train[1:1,:]
+
+
         for i=1:size(rules,1)
-            
+
             push!(df,rules[i])
         end
         df=df[2:size(df,2),:]
