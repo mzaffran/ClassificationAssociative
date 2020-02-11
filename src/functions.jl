@@ -153,6 +153,7 @@ function createFeatures(dataFolder::String, dataSet::String)
 
         end
 
+
         if dataSet == "other"
             #TODO
         end
@@ -259,10 +260,10 @@ function createRules(dataSet::String, resultsFolder::String, train::DataFrames.D
                     println(iter)
                     optimize!(m)
 
-                    bopt=JuMP.value.(b)
+                    bopt=round.(JuMP.value.(b))
                     rule=[y]
                     append!(rule,bopt)
-                    xopt=JuMP.value.(x)
+                    xopt=round.(JuMP.value.(x))
                     s = JuMP.objective_value(m)
                     println(cmax, " ", sum(xopt[i] for i=1:n))
 
@@ -279,14 +280,18 @@ function createRules(dataSet::String, resultsFolder::String, train::DataFrames.D
                 if iter < iterlim
                     println(iter)
                     optimize!(m)
-
-                    bopt=JuMP.value.(b)
+                    
+                    bopt=round.(JuMP.value.(b))
+                    
                     rule=[y]
+ 
                     append!(rule,bopt)
-                    xopt=JuMP.value.(x)
+                    
+                    xopt=round.(JuMP.value.(x))
                     obj= JuMP.objective_value(m)
-                    println(cmax, " ", sum(xopt[i] for i=1:n))
 
+                    println(cmax, " ", sum(xopt[i] for i=1:n))
+                    
                     if obj < s
 
                         cmax=min(cmax-1, sum(xopt[i] for i=1:n ))
@@ -317,11 +322,11 @@ function createRules(dataSet::String, resultsFolder::String, train::DataFrames.D
             # - if it is not the first rule, use: rules = append!(rules, rule)
         end
 
+        println("fin")
         df = train[1:1,:]
 
 
         for i=1:size(rules,1)
-
             push!(df,rules[i])
         end
         df=df[2:size(df,2),:]
