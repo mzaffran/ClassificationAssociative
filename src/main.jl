@@ -22,14 +22,15 @@ train, test = createFeatures(dataFolder, dataSet)
 # Details:
 # - read the file ./data/kidney_train.csv
 # - save the rules in ./res/kidney_rules.csv
-rules = createRules(dataSet, resultsFolder, train)
+timeLimitInSecondsCreate = 300
+rules = createRules(dataSet, resultsFolder, train, timeLimitInSecondsCreate)
 
 # Order the rules (limit the resolution to 300 seconds)
 # Details:
 # - read the file ./data/kidney_rules.csv
 # - save the rules in ./res/kidney_ordered_rules.csv
-timeLimitInSeconds = 300
-orderedRules = sortRules(dataSet, resultsFolder, train, rules, timeLimitInSeconds)
+timeLimitInSecondsSort = 300
+orderedRules = sortRules(dataSet, resultsFolder, train, rules, timeLimitInSecondsSort)
 
 println("-- Train results")
 showStatistics(orderedRules, train)

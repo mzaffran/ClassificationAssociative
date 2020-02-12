@@ -196,7 +196,7 @@ Arguments
 Output
  - table of rules (each line is a rule, the first column corresponds to the rules class)
 """
-function createRules(dataSet::String, resultsFolder::String, train::DataFrames.DataFrame)
+function createRules(dataSet::String, resultsFolder::String, train::DataFrames.DataFrame, tilim::Int64)
 
     # Output file
     rulesPath = resultsFolder * dataSet * "_rules.csv"
@@ -244,7 +244,7 @@ function createRules(dataSet::String, resultsFolder::String, train::DataFrames.D
 
             m=Model(with_optimizer(CPLEX.Optimizer))
             set_parameter(m,"CPX_PARAM_SCRIND",0)
-            set_parameter(m, "CPX_PARAM_TILIM",300)
+            set_parameter(m, "CPX_PARAM_TILIM",tilim)
             @variable(m,x[i in 1:n], Bin)
             @variable(m,b[i in 1:d] , Bin)
 
@@ -280,18 +280,18 @@ function createRules(dataSet::String, resultsFolder::String, train::DataFrames.D
                 if iter < iterlim
                     println(iter)
                     optimize!(m)
-                    
+
                     bopt=round.(JuMP.value.(b))
-                    
+
                     rule=[y]
- 
+
                     append!(rule,bopt)
-                    
+
                     xopt=round.(JuMP.value.(x))
                     obj= JuMP.objective_value(m)
 
                     println(cmax, " ", sum(xopt[i] for i=1:n))
-                    
+
                     if obj < s
 
                         cmax=min(cmax-1, sum(xopt[i] for i=1:n ))
