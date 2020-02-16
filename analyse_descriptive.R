@@ -1,5 +1,17 @@
 setwd('/Users/margauxzaffran/Documents/ENSTA/3A/SOD322/ClassificationAssociative')
 
+precision <- function(y_true, y_pred, class){
+  VP <- sum(y_pred[y_true == class] == class)
+  FP <- sum(y_pred[y_true != class] == class)
+  return(VP / (VP+FP))
+}
+
+recall <- function(y_true, y_pred, class){
+  VP <- sum(y_pred[y_true == class] == class)
+  FN <- sum(y_pred[y_true == class] != class)
+  return(VP / (VP+FN))
+}
+
 library('tidyverse')
 
 data <- read_csv('data/kidney.csv')
@@ -52,18 +64,34 @@ test = data[test,]
 
 # Arbre maximal
 
-init_tree = rpart(class ~ ., data = train)
+init_tree = rpart(class ~ ., data = train, method = "class")
 plot(init_tree)
 text(init_tree,cex=.8)
 print(init_tree)
 
-max_tree = rpart(class ~ ., data = train, control = rpart.control(cp = 0))
+max_tree = rpart(class ~ ., data = train, method = "class", control = rpart.control(cp = 0))
 plot(max_tree)
 text(max_tree,cex=.7)
 print(max_tree)
+
+class_train = predict(max_tree,type = "class")
+class_test = predict(max_tree, newdata = test, type = "class")
+
+precision(train$class, class_train, 0)
+recall(train$class, class_train, 0)
+
+precision(train$class, class_train, 1)
+recall(train$class, class_train, 1)
+
+precision(test$class, class_test, 0)
+recall(test$class, class_test, 0)
+
+precision(test$class, class_test, 1)
+recall(test$class, class_test, 1)
 
 # Analyse descriptive
 
 library(corrplot)
 
 corrplot(cor(data), method="circle")
+

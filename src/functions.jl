@@ -103,59 +103,70 @@ function createFeatures(dataFolder::String, dataSet::String)
             # ckd (ill) is represented by 1, notckd by 0
             features.Class = ifelse.(rawData.class .== "ckd", 1, 0)
 
-            createColumns(:age, [0, 15, 20, 30, 40, 50, 60, 70, 80, Inf], rawData, features)
+            #createColumns(:age, [0, 15, 20, 30, 40, 50, 60, 70, 80, Inf], rawData, features)
 
             # Categorical features
 
-            features.PC = ifelse.(rawData.pc .== "abnormal", 1, 0)
-            features.PCC = ifelse.(rawData.pcc .== "present", 1, 0)
-            features.BA = ifelse.(rawData.ba .== "present", 1, 0)
-            features.HTN = ifelse.(rawData.htn .== "yes", 1, 0)
-            features.DM = ifelse.(rawData.dm .== "yes", 1, 0)
-            features.CAD = ifelse.(rawData.cad .== "yes", 1, 0)
-            features.PE = ifelse.(rawData.pe .== "yes", 1, 0)
-            features.ANE = ifelse.(rawData.ane .== "yes", 1, 0)
-            features.APPET = ifelse.(rawData.appet .== "good", 1, 0)
+            #features.PC = ifelse.(rawData.pc .== "abnormal", 1, 0)
+            #features.PCC = ifelse.(rawData.pcc .== "present", 1, 0)
+            #features.BA = ifelse.(rawData.ba .== "present", 1, 0)
+            #features.HTN = ifelse.(rawData.htn .== "yes", 1, 0)
+            #features.DM = ifelse.(rawData.dm .== "yes", 1, 0)
+            #features.CAD = ifelse.(rawData.cad .== "yes", 1, 0)
+            #features.PE = ifelse.(rawData.pe .== "yes", 1, 0)
+            #features.ANE = ifelse.(rawData.ane .== "yes", 1, 0)
+            #features.APPET = ifelse.(rawData.appet .== "good", 1, 0)
 
             # Discrete features
 
-            for a in sort(unique(rawData.bp))
+            #for a in sort(unique(rawData.bp))
                 # Create 1 feature column named "BP50", "BP60", "BP70", "BP80", "BP90", "BP100" or "BP110"
-                features[!, Symbol("BP", a)] = ifelse.(rawData.bp .<= a, 1, 0)
-            end
+            #    features[!, Symbol("BP", a)] = ifelse.(rawData.bp .<= a, 1, 0)
+            #end
 
-            for a in sort(unique(rawData.sg))
+            #for a in sort(unique(rawData.sg))
                 # Create 1 feature column named "SG05", "SG1", "SG15", "SG2" or "SG25"
-                features[!, Symbol("SG", a)] = ifelse.(rawData.sg .<= a, 1, 0)
-            end
+            #    features[!, Symbol("SG", a)] = ifelse.(rawData.sg .<= a, 1, 0)
+            #end
 
-            for a in sort(unique(rawData.al))
+            #for a in sort(unique(rawData.al))
                 # Create 1 feature column named "AL0", "AL1", "AL2", "AL3" or "AL4"
-                features[!, Symbol("AL", a)] = ifelse.(rawData.al .<= a, 1, 0)
-            end
+            #    features[!, Symbol("AL", a)] = ifelse.(rawData.al .<= a, 1, 0)
+            #end
 
-            for a in sort(unique(rawData.su))
+            #for a in sort(unique(rawData.su))
                 # Create 1 feature column named "SU0", "SU1", "SU2", "SU3", "SU4" or "SU5"
-                features[!, Symbol("SU", a)] = ifelse.(rawData.su .<= a, 1, 0)
-            end
+            #    features[!, Symbol("SU", a)] = ifelse.(rawData.su .<= a, 1, 0)
+            #end
 
             # Continuous features
 
-            createColumns(:bgr, [0, 100, 125, 150, 175, 200, 250, 300, 400, 450, Inf], rawData, features)
-            createColumns(:bu, [0, 25, 50, 75, 100, 125, 150, 175, 200, 225, 250, Inf], rawData, features)
-            createColumns(:sc, [0, 1, 2, 3, 4, 6, 8, 10, 12, Inf], rawData, features)
-            createColumns(:sod, [0, 115, 120, 125, 130, 135, 140, 145, Inf], rawData, features)
-            createColumns(:pot, [0, 5, 10, Inf], rawData, features)
-            createColumns(:hemo, [0, 4, 6, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, Inf], rawData, features)
-            createColumns(:pcv, [0, 10, 20, 25, 30, 35, 40, 45, 50, Inf], rawData, features)
-            createColumns(:wbcc, [0, 5000, 7500, 10000, 12500, 15000, 20000, Inf], rawData, features)
-            createColumns(:rbcc, [0, 2.5, 3, 3.5, 4, 4.5, 5, 5.5, 6, 6.5, 7, Inf], rawData, features)
+            #createColumns(:bgr, [0, 100, 125, 150, 175, 200, 250, 300, 400, 450, Inf], rawData, features)
+            #createColumns(:bu, [0, 25, 50, 75, 100, 125, 150, 175, 200, 225, 250, Inf], rawData, features)
+            #createColumns(:sc, [0, 1, 2, 3, 4, 6, 8, 10, 12, Inf], rawData, features)
+            #createColumns(:sod, [0, 115, 120, 125, 130, 135, 140, 145, Inf], rawData, features)
+            #createColumns(:pot, [0, 5, 10, Inf], rawData, features)
+            #createColumns(:hemo, [0, 4, 6, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, Inf], rawData, features)
+            #createColumns(:pcv, [0, 10, 20, 25, 30, 35, 40, 45, 50, Inf], rawData, features)
+            #createColumns(:wbcc, [0, 5000, 7500, 10000, 12500, 15000, 20000, Inf], rawData, features)
+            #createColumns(:rbcc, [0, 2.5, 3, 3.5, 4, 4.5, 5, 5.5, 6, 6.5, 7, Inf], rawData, features)
+
+            #createColumns(:bgr, [0, 132.5, Inf], rawData, features)
+            #createColumns(:pcv, [0, 40.5, Inf], rawData, features)
+            #createColumns(:rbcc, [0, 4.55, Inf], rawData, features)
+            createColumns(:hemo, [0, 13.05, Inf], rawData, features)
+            createColumns(:sc, [0, 1.25, Inf], rawData, features)
 
         end
 
 
-        if dataSet == "other"
-            #TODO
+        if dataSet == "multiclass"
+
+            features.Class = rawData.sg
+
+            createColumns(:hemo, [0, 13.05, Inf], rawData, features)
+            createColumns(:sc, [0, 1.25, Inf], rawData, features)
+
         end
 
         # Shuffle the individuals
@@ -236,7 +247,9 @@ function createRules(dataSet::String, resultsFolder::String, train::DataFrames.D
         rule= Array{Int64}(zeros(d+1))
         xopt = Array{Int64}(zeros(n))
 
-        for y = 0:1
+        ymax = maximum(train[:,1])
+
+        for y = 0:ymax
             cmax=n
             s=0
 
@@ -250,7 +263,7 @@ function createRules(dataSet::String, resultsFolder::String, train::DataFrames.D
 
             @constraint(m, [i=1:n,j=1:d  ], x[i]<=1+(t[i,j]-1)*b[j]) # Si b[j] est dans la regle et i ne satisfait pas b[j] => x[i] = 0
             @constraint(m, [i=1:n  ], x[i]>=1+sum( (t[i,j]-1)*b[j] for j in 1:d )) # Si  i satisfat b => x[i]=1
-            @constraint(m , couverture, sum(x[i] for  i in 1:n ) <=cmax )  # couverture
+            @constraint(m , couverture, sum(x[i] for  i in 1:n ) <= cmax )  # couverture
 
             @objective(m, Max, sum( x[i] for i in 1:n if transactionClass[i,1]==y )- RgenX*sum( x[i] for i in 1:n ) -RgenB*sum(b[j] for j in 1:d) )
 
@@ -524,18 +537,26 @@ function showStatistics(orderedRules::DataFrames.DataFrame, dataSet::DataFrames.
     # Number of transactions
     n = size(dataSet, 1)
 
+    # Number of classes
+    classMax = maximum(train[:,1])
+    classNb = classMax + 1
+
     # Statistics with respect to class 0:
     # - true positive;
     # - true negative;
     # - false positive;
     # - false negative
-    tp::Int = 0
-    fp::Int = 0
-    fn::Int = 0
-    tn::Int = 0
-
+    # tp::Int = 0
+    # fp::Int = 0
+    # fn::Int = 0
+    # tn::Int = 0
+    tp = Array{Int, 1}(zeros(classNb))
+    fp = Array{Int, 1}(zeros(classNb))
+    fn = Array{Int, 1}(zeros(classNb))
+    #
     # Number of individuals in each class
-    classSize = Array{Int, 1}([0, 0])
+    # classSize = Array{Int, 1}([0, 0])
+    classSize = Array{Int, 1}(zeros(classNb))
 
     # For all transaction i in the data set
     for i in 1:n
@@ -545,37 +566,62 @@ function showStatistics(orderedRules::DataFrames.DataFrame, dataSet::DataFrames.
 
         # If transaction i is classified correctly (i.e., if it is a true)
         if orderedRules[ruleId, 1] == dataSet[i, 1]
-
-            # If transaction i is of class 0
-            if dataSet[i, 1] == 0
-                tp += 1
-                classSize[1] += 1
-            else
-                tn += 1
-                classSize[2] += 1
-            end
-
-            # If it is a negative
+            tp[dataSet[i, 1] + 1] += 1
+            classSize[dataSet[i, 1] + 1] += 1
         else
-
-            # If transaction i is of class 0
-            if dataSet[i, 1] == 0
-                fn += 1
-                classSize[1] += 1
-            else
-                fp += 1
-                classSize[2] += 1
-            end
+            fn[dataSet[i, 1] + 1] += 1
+            fp[orderedRules[ruleId, 1] + 1] += 1
+            classSize[dataSet[i, 1] + 1] += 1
         end
+
+        # # If transaction i is classified correctly (i.e., if it is a true)
+        # if orderedRules[ruleId, 1] == dataSet[i, 1]
+        #
+        #     # If transaction i is of class 0
+        #     if dataSet[i, 1] == 0
+        #         tp += 1
+        #         classSize[1] += 1
+        #     else
+        #         tn += 1
+        #         classSize[2] += 1
+        #     end
+        #
+        #     # If it is a negative
+        # else
+        #
+        #     # If transaction i is of class 0
+        #     if dataSet[i, 1] == 0
+        #         fn += 1
+        #         classSize[1] += 1
+        #     else
+        #         fp += 1
+        #         classSize[2] += 1
+        #     end
+        # end
     end
 
-    precision = Array{Float64, 1}([tp / (tp+fp), tn / (tn+fn)])
-    recall = Array{Float64, 1}([tp / (tp + fn), tn / (tn + fp)])
+    precision = Array{Float64, 1}(tp./(tp+fp))
+    recall = Array{Float64, 1}(tp./(tp+fn))
 
     println("Class\tPrec.\tRecall\tSize")
-    println("0\t", round(precision[1], digits=2), "\t", round(recall[1], digits=2), "\t", classSize[1])
-    println("1\t", round(precision[2], digits=2), "\t", round(recall[2], digits=2), "\t", classSize[2], "\n")
-    println("avg\t", round((precision[1] + precision[2])/2, digits=2), "\t", round((recall[1] + recall[2])/2, digits=2))
-    println("w. avg\t", round(precision[1] * classSize[1] / size(dataSet, 1) + precision[2] * classSize[2] / size(dataSet, 1), digits = 2), "\t", round(recall[1] * classSize[1] / size(dataSet, 1) + recall[2] * classSize[2] / size(dataSet, 1), digits = 2), "\n")
+    for class in 0:classMax
+        println(class, "\t", round(precision[class+1], digits=2), "\t", round(recall[class+1], digits=2), "\t", classSize[class+1])
+    end
+    println("\n")
+    println("avg\t", round(mean(precision), digits=2), "\t", round(mean(recall), digits=2))
+    println("w. avg\t", round(sum(precision.*classSize)/size(dataSet, 1), digits = 2), "\t", round(sum(recall.*classSize)/size(dataSet, 1), digits = 2), "\n")
+
+    println("TP", tp)
+    println("FP", fp)
+    println("FN", fn)
+
+    # precision = Array{Float64, 1}([tp / (tp+fp), tn / (tn+fn)])
+    # recall = Array{Float64, 1}([tp / (tp + fn), tn / (tn + fp)])
+
+    # println("Class\tPrec.\tRecall\tSize")
+    # println("0\t", round(precision[1], digits=2), "\t", round(recall[1], digits=2), "\t", classSize[1])
+    # println("1\t", round(precision[2], digits=2), "\t", round(recall[2], digits=2), "\t", classSize[2], "\n")
+    # println("avg\t", round((precision[1] + precision[2])/2, digits=2), "\t", round((recall[1] + recall[2])/2, digits=2))
+    # println("w. avg\t", round(precision[1] * classSize[1] / size(dataSet, 1) + precision[2] * classSize[2] / size(dataSet, 1), digits = 2), "\t", round(recall[1] * classSize[1] / size(dataSet, 1) + recall[2] * classSize[2] / size(dataSet, 1), digits = 2), "\n")
 
 end

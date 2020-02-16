@@ -3,10 +3,11 @@ using JuMP
 using CPLEX
 using DataFrames
 using Random
+using Statistics
 
 include("functions.jl")
 
-dataSet = "kidney"
+dataSet = "multiclass"
 dataFolder = "./data/"
 resultsFolder = "./res/"
 
