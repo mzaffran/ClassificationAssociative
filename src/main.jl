@@ -7,7 +7,7 @@ using Statistics
 
 include("functions.jl")
 
-dataSet = "multiclass"
+dataSet = "kidney"
 dataFolder = "./data/"
 resultsFolder = "./res/"
 
