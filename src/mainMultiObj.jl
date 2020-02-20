@@ -1,14 +1,20 @@
 using CSV
-using JuMP
+
 using CPLEX
 using DataFrames
 using Random
+using Pkg
+
+Pkg.activate(pwd())
+Pkg.add(PackageSpec(name="JuMP", version="0.18.6"))
+#Pkg.add(PackageSpec(name="vOptGeneric"))
+using JuMP
 using vOptGeneric
 using Statistics
 
 include("functionsMultiObj.jl")
 
-dataSet = "multiobj_kidney" # "multiclass_multiobj" or "multiobj_kidney"
+dataSet = "multiclass_multiobj" # "multiclass_multiobj" or "multiobj_kidney"
 dataFolder = "./data/"
 resultsFolder = "./res/"
 
