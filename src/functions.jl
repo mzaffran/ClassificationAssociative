@@ -120,24 +120,24 @@ function createFeatures(dataFolder::String, dataSet::String)
             # Discrete features
 
             #for a in sort(unique(rawData.bp))
-                # Create 1 feature column named "BP50", "BP60", "BP70", "BP80", "BP90", "BP100" or "BP110"
+                 #Create 1 feature column named "BP50", "BP60", "BP70", "BP80", "BP90", "BP100" or "BP110"
             #    features[!, Symbol("BP", a)] = ifelse.(rawData.bp .<= a, 1, 0)
             #end
 
             #for a in sort(unique(rawData.sg))
-                # Create 1 feature column named "SG05", "SG1", "SG15", "SG2" or "SG25"
+                 #Create 1 feature column named "SG05", "SG1", "SG15", "SG2" or "SG25"
             #    features[!, Symbol("SG", a)] = ifelse.(rawData.sg .<= a, 1, 0)
             #end
 
             #for a in sort(unique(rawData.al))
-                # Create 1 feature column named "AL0", "AL1", "AL2", "AL3" or "AL4"
+                 #Create 1 feature column named "AL0", "AL1", "AL2", "AL3" or "AL4"
             #    features[!, Symbol("AL", a)] = ifelse.(rawData.al .<= a, 1, 0)
             #end
 
-            #for a in sort(unique(rawData.su))
+            for a in sort(unique(rawData.su))
                 # Create 1 feature column named "SU0", "SU1", "SU2", "SU3", "SU4" or "SU5"
-            #    features[!, Symbol("SU", a)] = ifelse.(rawData.su .<= a, 1, 0)
-            #end
+                features[!, Symbol("SU", a)] = ifelse.(rawData.su .<= a, 1, 0)
+            end
 
             # Continuous features
 
@@ -152,7 +152,7 @@ function createFeatures(dataFolder::String, dataSet::String)
             #createColumns(:rbcc, [0, 2.5, 3, 3.5, 4, 4.5, 5, 5.5, 6, 6.5, 7, Inf], rawData, features)
 
             #createColumns(:bgr, [0, 132.5, Inf], rawData, features)
-            #createColumns(:pcv, [0, 40.5, Inf], rawData, features)
+            createColumns(:pcv, [0, 40.5, Inf], rawData, features)
             #createColumns(:rbcc, [0, 4.55, Inf], rawData, features)
             createColumns(:hemo, [0, 13.05, Inf], rawData, features)
             createColumns(:sc, [0, 1.25, Inf], rawData, features)
@@ -297,9 +297,9 @@ function createRules(dataSet::String, resultsFolder::String, train::DataFrames.D
 
             println("-- Classe $y")
 
-            m=Model(with_optimizer(CPLEX.Optimizer))
-            set_parameter(m,"CPX_PARAM_SCRIND",0)
-            set_parameter(m, "CPX_PARAM_TILIM",tilim)
+            m=Model(CPLEX.Optimizer)
+            set_optimizer_attribute(m,"CPX_PARAM_SCRIND",0)
+            set_optimizer_attribute(m, "CPX_PARAM_TILIM",tilim)
             @variable(m,x[i in 1:n], Bin)
             @variable(m,b[i in 1:d] , Bin)
 
@@ -312,7 +312,7 @@ function createRules(dataSet::String, resultsFolder::String, train::DataFrames.D
             while cmax>n*mincovy
 
                 if iter==1
-                    println(iter)
+                    #println(iter)
                     optimize!(m)
 
                     bopt=round.(JuMP.value.(b))
@@ -320,7 +320,7 @@ function createRules(dataSet::String, resultsFolder::String, train::DataFrames.D
                     append!(rule,bopt)
                     xopt=round.(JuMP.value.(x))
                     s = JuMP.objective_value(m)
-                    println(cmax, " ", sum(xopt[i] for i=1:n))
+                    #println(cmax, " ", sum(xopt[i] for i=1:n))
 
                     iter+=1
                 end
@@ -333,7 +333,7 @@ function createRules(dataSet::String, resultsFolder::String, train::DataFrames.D
                 @constraint(m, sum(b[j] for j=1:d if bopt[j]==0) + sum(1-b[j] for j=1:d if bopt[j] ==1 ) >=1 ) #
 
                 if iter < iterlim
-                    println(iter)
+                    #println(iter)
                     optimize!(m)
 
                     bopt=round.(JuMP.value.(b))
@@ -345,7 +345,7 @@ function createRules(dataSet::String, resultsFolder::String, train::DataFrames.D
                     xopt=round.(JuMP.value.(x))
                     obj= JuMP.objective_value(m)
 
-                    println(cmax, " ", sum(xopt[i] for i=1:n))
+                    #println(cmax, " ", sum(xopt[i] for i=1:n))
 
                     if obj < s
 
@@ -370,14 +370,13 @@ function createRules(dataSet::String, resultsFolder::String, train::DataFrames.D
                 end
 
             end
-            #TODO
 
             # Help: Let rule be a rule that you want to add to rules
             # - if it is the first rule, use: rules = rule
             # - if it is not the first rule, use: rules = append!(rules, rule)
         end
 
-        println("fin")
+        #println("fin")
         df = train[1:1,:]
 
 
@@ -475,8 +474,8 @@ function sortRules(dataSet::String, resultsFolder::String, train::DataFrames.Dat
         ################
         # Create and solve the model
         ###############
-        m = Model(with_optimizer(CPLEX.Optimizer))
-        set_parameter(m, "CPX_PARAM_TILIM", tilim)
+        m = Model(CPLEX.Optimizer)
+        set_optimizer_attribute(m, "CPX_PARAM_TILIM", tilim)
 
         # u_il: rule l is the highest which applies to transaction i
         @variable(m, u[1:n, 1:L], Bin)
@@ -652,10 +651,6 @@ function showStatistics(orderedRules::DataFrames.DataFrame, dataSet::DataFrames.
     println("\n")
     println("avg\t", round(mean(precision), digits=2), "\t", round(mean(recall), digits=2))
     println("w. avg\t", round(sum(precision.*classSize)/size(dataSet, 1), digits = 2), "\t", round(sum(recall.*classSize)/size(dataSet, 1), digits = 2), "\n")
-
-    println("TP", tp)
-    println("FP", fp)
-    println("FN", fn)
 
     # precision = Array{Float64, 1}([tp / (tp+fp), tn / (tn+fn)])
     # recall = Array{Float64, 1}([tp / (tp + fn), tn / (tn + fp)])
