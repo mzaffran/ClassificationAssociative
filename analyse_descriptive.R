@@ -95,3 +95,28 @@ library(corrplot)
 
 corrplot(cor(data), method="circle")
 
+library(randomForest)
+
+data$class = as.factor(data$class)
+train$class = as.factor(train$class)
+test$class = as.factor(test$class)
+
+rf = randomForest(class ~ ., data = train, importance = TRUE)
+class_train_rf = predict(rf, type = "class")
+class_test_rf = predict(rf, newdata = test, type = "class")
+
+precision(train$class, class_train_rf, 0)
+recall(train$class, class_train_rf, 0)
+
+precision(train$class, class_train_rf, 1)
+recall(train$class, class_train_rf, 1)
+
+precision(test$class, class_test_rf, 0)
+recall(test$class, class_test_rf, 0)
+
+precision(test$class, class_test_rf, 1)
+recall(test$class, class_test_rf, 1)
+
+varImpPlot(rf, main="Variable importance using random forest")
+rf$importance
+
