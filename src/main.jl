@@ -16,22 +16,33 @@ resultsFolder = "./res/"
 # Details:
 # - read the file ./data/kidney.csv
 # - save the features in ./data/kidney_test.csv and ./data/kidney_train.csv
-train, test = createFeatures(dataFolder, dataSet)
+deleteData = true
+train, test = createFeatures(dataFolder, dataSet, deleteData)
 
 # Create the rules (or load them if they already exist)
 # Note: each line corresponds to a rule, the first column corresponds to the class
 # Details:
 # - read the file ./data/kidney_train.csv
 # - save the rules in ./res/kidney_rules.csv
-timeLimitInSecondsCreate = 300
-rules = createRules(dataSet, resultsFolder, train, timeLimitInSecondsCreate)
+timeLimitInSecondsCreate = 600
+deleteCreate = true
+t1 = time_ns()
+rules = createRules(dataSet, resultsFolder, train, timeLimitInSecondsCreate, deleteCreate)
+t2 = time_ns()
+println("-- Elapsed time (s) to generate rules ",(t2-t1)/1.0e9)
 
 # Order the rules (limit the resolution to 300 seconds)
 # Details:
 # - read the file ./data/kidney_rules.csv
 # - save the rules in ./res/kidney_ordered_rules.csv
-timeLimitInSecondsSort = 300
-orderedRules = sortRules(dataSet, resultsFolder, train, rules, timeLimitInSecondsSort)
+timeLimitInSecondsSort = 600
+deleteSort = true
+t1 = time_ns()
+orderedRules = sortRules(dataSet, resultsFolder, train, rules, timeLimitInSecondsSort, deleteSort)
+t2 = time_ns()
+println("-- Elapsed time (s) to generate rules ",(t2-t1)/1.0e9)
+
+println("=== Results")
 
 println("-- Train results")
 showStatistics(orderedRules, train)

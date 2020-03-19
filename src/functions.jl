@@ -17,7 +17,7 @@ function createColumns(header::Symbol, intervals, data::DataFrames.DataFrame, fe
     for i in 1:size(intervals, 1) - 1
         lb = intervals[i]
         ub = intervals[i+1]
-        features[!, Symbol(header, lb, "-", (ub-1))] = ifelse.((data[!, header] .>= lb) .& (data[!, header] .< ub), 1, 0)
+        features[!, Symbol(header, lb, "-", (ub))] = ifelse.((data[!, header] .>= lb) .& (data[!, header] .< ub), 1, 0)
     end
 end
 
@@ -30,7 +30,7 @@ Arguments:
 
 Important remark: the first column of the output files must correspond to the class of each individual (and it must be 0 or 1)
 """
-function createFeatures(dataFolder::String, dataSet::String)
+function createFeatures(dataFolder::String, dataSet::String, delete)
 
     # Get the input file path
     rawDataPath = dataFolder * dataSet * ".csv"
@@ -49,7 +49,7 @@ function createFeatures(dataFolder::String, dataSet::String)
     testDataPath = dataFolder * dataSet * "_test.csv"
 
     # If the train or the test file do not exist
-    if !isfile(trainDataPath) || !isfile(testDataPath)
+    if !isfile(trainDataPath) || !isfile(testDataPath) || delete == true
 
         println("=== Creating the features")
 
@@ -103,7 +103,14 @@ function createFeatures(dataFolder::String, dataSet::String)
             # ckd (ill) is represented by 1, notckd by 0
             features.Class = ifelse.(rawData.class .== "ckd", 1, 0)
 
-            #createColumns(:age, [0, 15, 20, 30, 40, 50, 60, 70, 80, Inf], rawData, features)
+            features.DM = ifelse.(rawData.dm .== "yes", 1, 0)
+            createColumns(:pcv, [0, 40, Inf], rawData, features)
+            createColumns(:rbcc, [0, 4.5, Inf], rawData, features)
+            createColumns(:hemo, [0, 13, Inf], rawData, features)
+            createColumns(:sc, [0, 1.25, Inf], rawData, features)
+            createColumns(:sg, [0, 1.02, Inf], rawData, features)
+
+            #createColumns(:age, [0, 21, 35, 61, 76, Inf], rawData, features)
 
             # Categorical features
 
@@ -121,23 +128,23 @@ function createFeatures(dataFolder::String, dataSet::String)
 
             #for a in sort(unique(rawData.bp))
                  #Create 1 feature column named "BP50", "BP60", "BP70", "BP80", "BP90", "BP100" or "BP110"
-            #    features[!, Symbol("BP", a)] = ifelse.(rawData.bp .<= a, 1, 0)
+            #    features[!, Symbol("BP", a)] = ifelse.(rawData.bp .== a, 1, 0)
             #end
 
             #for a in sort(unique(rawData.sg))
                  #Create 1 feature column named "SG05", "SG1", "SG15", "SG2" or "SG25"
-            #    features[!, Symbol("SG", a)] = ifelse.(rawData.sg .<= a, 1, 0)
+            #    features[!, Symbol("SG", a)] = ifelse.(rawData.sg .== a, 1, 0)
             #end
 
             #for a in sort(unique(rawData.al))
                  #Create 1 feature column named "AL0", "AL1", "AL2", "AL3" or "AL4"
-            #    features[!, Symbol("AL", a)] = ifelse.(rawData.al .<= a, 1, 0)
+            #    features[!, Symbol("AL", a)] = ifelse.(rawData.al .== a, 1, 0)
             #end
 
-            for a in sort(unique(rawData.su))
+            #for a in sort(unique(rawData.su))
                 # Create 1 feature column named "SU0", "SU1", "SU2", "SU3", "SU4" or "SU5"
-                features[!, Symbol("SU", a)] = ifelse.(rawData.su .<= a, 1, 0)
-            end
+            #    features[!, Symbol("SU", a)] = ifelse.(rawData.su .== a, 1, 0)
+            #end
 
             # Continuous features
 
@@ -151,11 +158,10 @@ function createFeatures(dataFolder::String, dataSet::String)
             #createColumns(:wbcc, [0, 5000, 7500, 10000, 12500, 15000, 20000, Inf], rawData, features)
             #createColumns(:rbcc, [0, 2.5, 3, 3.5, 4, 4.5, 5, 5.5, 6, 6.5, 7, Inf], rawData, features)
 
-            #createColumns(:bgr, [0, 132.5, Inf], rawData, features)
-            createColumns(:pcv, [0, 40.5, Inf], rawData, features)
-            #createColumns(:rbcc, [0, 4.55, Inf], rawData, features)
-            createColumns(:hemo, [0, 13.05, Inf], rawData, features)
-            createColumns(:sc, [0, 1.25, Inf], rawData, features)
+            #createColumns(:bu, [0, 51, Inf], rawData, features)
+            #createColumns(:bgr, [0, 141, Inf], rawData, features)
+            #createColumns(:sod, [0, 135, Inf], rawData, features)
+            #createColumns(:wbcc, [0, 11001, Inf], rawData, features)
 
         end
 
@@ -249,13 +255,13 @@ Arguments
 Output
  - table of rules (each line is a rule, the first column corresponds to the rules class)
 """
-function createRules(dataSet::String, resultsFolder::String, train::DataFrames.DataFrame, tilim::Int64)
+function createRules(dataSet::String, resultsFolder::String, train::DataFrames.DataFrame, tilim::Int64, delete)
 
     # Output file
     rulesPath = resultsFolder * dataSet * "_rules.csv"
     rules = []
 
-    if !isfile(rulesPath)
+    if !isfile(rulesPath) || delete == true
 
         println("=== Generating the rules")
 
@@ -408,11 +414,11 @@ Arguments
   - rules: rules which must be sorted (1 row = 1 rule)
   - tilim: maximal running time of CPLEX in seconds
 """
-function sortRules(dataSet::String, resultsFolder::String, train::DataFrames.DataFrame, rules::DataFrames.DataFrame, tilim::Int64)
+function sortRules(dataSet::String, resultsFolder::String, train::DataFrames.DataFrame, rules::DataFrames.DataFrame, tilim::Int64, delete)
 
     orderedRulesPath = resultsFolder * dataSet * "_ordered_rules.csv"
 
-    if !isfile(orderedRulesPath)
+    if !isfile(orderedRulesPath) || delete == true
 
         println("=== Sorting the rules")
 
@@ -475,6 +481,7 @@ function sortRules(dataSet::String, resultsFolder::String, train::DataFrames.Dat
         # Create and solve the model
         ###############
         m = Model(CPLEX.Optimizer)
+        set_optimizer_attribute(m,"CPX_PARAM_SCRIND",0)
         set_optimizer_attribute(m, "CPX_PARAM_TILIM", tilim)
 
         # u_il: rule l is the highest which applies to transaction i
