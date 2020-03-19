@@ -29,7 +29,7 @@ deleteCreate = true
 t1 = time_ns()
 rules = createRules(dataSet, resultsFolder, train, timeLimitInSecondsCreate, deleteCreate)
 t2 = time_ns()
-println("-- Elapsed time (s) to generate rules ",(t2-t1)/1.0e9)
+println("-- Elapsed time to generate rules ",(t2-t1)/1.0e9, "s")
 
 # Order the rules (limit the resolution to 300 seconds)
 # Details:
@@ -40,7 +40,7 @@ deleteSort = true
 t1 = time_ns()
 orderedRules = sortRules(dataSet, resultsFolder, train, rules, timeLimitInSecondsSort, deleteSort)
 t2 = time_ns()
-println("-- Elapsed time (s) to generate rules ",(t2-t1)/1.0e9)
+println("-- Elapsed time to order rules ",(t2-t1)/1.0e9, "s")
 
 println("=== Results")
 
