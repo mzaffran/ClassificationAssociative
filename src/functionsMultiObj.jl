@@ -110,54 +110,6 @@ function createFeatures(dataFolder::String, dataSet::String, delete, respect)
             createColumns(:sc, [0, 1.25, Inf], rawData, features)
             createColumns(:sg, [0, 1.02, Inf], rawData, features)
 
-            # createColumns(:age, [0, 15, 20, 30, 40, 50, 60, 70, 80, Inf], rawData, features)
-            #
-            # # Categorical features
-            #
-            # features.PC = ifelse.(rawData.pc .== "abnormal", 1, 0)
-            # features.PCC = ifelse.(rawData.pcc .== "present", 1, 0)
-            # features.BA = ifelse.(rawData.ba .== "present", 1, 0)
-            # features.HTN = ifelse.(rawData.htn .== "yes", 1, 0)
-            # features.DM = ifelse.(rawData.dm .== "yes", 1, 0)
-            # features.CAD = ifelse.(rawData.cad .== "yes", 1, 0)
-            # features.PE = ifelse.(rawData.pe .== "yes", 1, 0)
-            # features.ANE = ifelse.(rawData.ane .== "yes", 1, 0)
-            # features.APPET = ifelse.(rawData.appet .== "good", 1, 0)
-            #
-            # # Discrete features
-            #
-            # for a in sort(unique(rawData.bp))
-            #     # Create 1 feature column named "BP50", "BP60", "BP70", "BP80", "BP90", "BP100" or "BP110"
-            #     features[!, Symbol("BP", a)] = ifelse.(rawData.bp .<= a, 1, 0)
-            # end
-            #
-            # for a in sort(unique(rawData.sg))
-            #     # Create 1 feature column named "SG05", "SG1", "SG15", "SG2" or "SG25"
-            #     features[!, Symbol("SG", a)] = ifelse.(rawData.sg .<= a, 1, 0)
-            # end
-            #
-            # for a in sort(unique(rawData.al))
-            #     # Create 1 feature column named "AL0", "AL1", "AL2", "AL3" or "AL4"
-            #     features[!, Symbol("AL", a)] = ifelse.(rawData.al .<= a, 1, 0)
-            # end
-            #
-            # for a in sort(unique(rawData.su))
-            #     # Create 1 feature column named "SU0", "SU1", "SU2", "SU3", "SU4" or "SU5"
-            #     features[!, Symbol("SU", a)] = ifelse.(rawData.su .<= a, 1, 0)
-            # end
-            #
-            # # Continuous features
-            #
-            # createColumns(:bgr, [0, 100, 125, 150, 175, 200, 250, 300, 400, 450, Inf], rawData, features)
-            # createColumns(:bu, [0, 25, 50, 75, 100, 125, 150, 175, 200, 225, 250, Inf], rawData, features)
-            # createColumns(:sc, [0, 1, 2, 3, 4, 6, 8, 10, 12, Inf], rawData, features)
-            # createColumns(:sod, [0, 115, 120, 125, 130, 135, 140, 145, Inf], rawData, features)
-            # createColumns(:pot, [0, 5, 10, Inf], rawData, features)
-            # createColumns(:hemo, [0, 4, 6, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, Inf], rawData, features)
-            # createColumns(:pcv, [0, 10, 20, 25, 30, 35, 40, 45, 50, Inf], rawData, features)
-            # createColumns(:wbcc, [0, 5000, 7500, 10000, 12500, 15000, 20000, Inf], rawData, features)
-            # createColumns(:rbcc, [0, 2.5, 3, 3.5, 4, 4.5, 5, 5.5, 6, 6.5, 7, Inf], rawData, features)
-
         end
 
         if dataSet == "multiclass" || dataSet=="multiclass_multiobj"
@@ -209,12 +161,6 @@ function createFeatures(dataFolder::String, dataSet::String, delete, respect)
              createColumns(:wbcc, [0, 5000, 7500, 10000, 12500, 15000, 20000, Inf], rawData, features)
              createColumns(:rbcc, [0, 2.5, 3, 3.5, 4, 4.5, 5, 5.5, 6, 6.5, 7, Inf], rawData, features)
 
-        end
-
-
-
-        if dataSet == "other"
-            #TODO
         end
 
         if respect == true
