@@ -202,6 +202,9 @@ function createFeatures(dataFolder::String, dataSet::String, delete, respect)
 
         end
 
+        CSV.write(trainDataPath, train)
+        CSV.write(testDataPath, test)
+
     # If the train and test file already exist
     else
         println("=== Warning: Existing features found, features creation skipped")
