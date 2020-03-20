@@ -30,7 +30,7 @@ Arguments:
 
 Important remark: the first column of the output files must correspond to the class of each individual (and it must be 0 or 1)
 """
-function createFeatures(dataFolder::String, dataSet::String, delete)
+function createFeatures(dataFolder::String, dataSet::String, delete, respect)
 
     # Get the input file path
     rawDataPath = dataFolder * dataSet * ".csv"
@@ -103,53 +103,60 @@ function createFeatures(dataFolder::String, dataSet::String, delete)
             # ckd (ill) is represented by 1, notckd by 0
             features.Class = ifelse.(rawData.class .== "ckd", 1, 0)
 
-            createColumns(:age, [0, 15, 20, 30, 40, 50, 60, 70, 80, Inf], rawData, features)
-
-            # Categorical features
-
-            features.PC = ifelse.(rawData.pc .== "abnormal", 1, 0)
-            features.PCC = ifelse.(rawData.pcc .== "present", 1, 0)
-            features.BA = ifelse.(rawData.ba .== "present", 1, 0)
-            features.HTN = ifelse.(rawData.htn .== "yes", 1, 0)
             features.DM = ifelse.(rawData.dm .== "yes", 1, 0)
-            features.CAD = ifelse.(rawData.cad .== "yes", 1, 0)
-            features.PE = ifelse.(rawData.pe .== "yes", 1, 0)
-            features.ANE = ifelse.(rawData.ane .== "yes", 1, 0)
-            features.APPET = ifelse.(rawData.appet .== "good", 1, 0)
+            createColumns(:pcv, [0, 40, Inf], rawData, features)
+            createColumns(:rbcc, [0, 4.5, Inf], rawData, features)
+            createColumns(:hemo, [0, 13, Inf], rawData, features)
+            createColumns(:sc, [0, 1.25, Inf], rawData, features)
+            createColumns(:sg, [0, 1.02, Inf], rawData, features)
 
-            # Discrete features
-
-            for a in sort(unique(rawData.bp))
-                # Create 1 feature column named "BP50", "BP60", "BP70", "BP80", "BP90", "BP100" or "BP110"
-                features[!, Symbol("BP", a)] = ifelse.(rawData.bp .<= a, 1, 0)
-            end
-
-            for a in sort(unique(rawData.sg))
-                # Create 1 feature column named "SG05", "SG1", "SG15", "SG2" or "SG25"
-                features[!, Symbol("SG", a)] = ifelse.(rawData.sg .<= a, 1, 0)
-            end
-
-            for a in sort(unique(rawData.al))
-                # Create 1 feature column named "AL0", "AL1", "AL2", "AL3" or "AL4"
-                features[!, Symbol("AL", a)] = ifelse.(rawData.al .<= a, 1, 0)
-            end
-
-            for a in sort(unique(rawData.su))
-                # Create 1 feature column named "SU0", "SU1", "SU2", "SU3", "SU4" or "SU5"
-                features[!, Symbol("SU", a)] = ifelse.(rawData.su .<= a, 1, 0)
-            end
-
-            # Continuous features
-
-            createColumns(:bgr, [0, 100, 125, 150, 175, 200, 250, 300, 400, 450, Inf], rawData, features)
-            createColumns(:bu, [0, 25, 50, 75, 100, 125, 150, 175, 200, 225, 250, Inf], rawData, features)
-            createColumns(:sc, [0, 1, 2, 3, 4, 6, 8, 10, 12, Inf], rawData, features)
-            createColumns(:sod, [0, 115, 120, 125, 130, 135, 140, 145, Inf], rawData, features)
-            createColumns(:pot, [0, 5, 10, Inf], rawData, features)
-            createColumns(:hemo, [0, 4, 6, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, Inf], rawData, features)
-            createColumns(:pcv, [0, 10, 20, 25, 30, 35, 40, 45, 50, Inf], rawData, features)
-            createColumns(:wbcc, [0, 5000, 7500, 10000, 12500, 15000, 20000, Inf], rawData, features)
-            createColumns(:rbcc, [0, 2.5, 3, 3.5, 4, 4.5, 5, 5.5, 6, 6.5, 7, Inf], rawData, features)
+            # createColumns(:age, [0, 15, 20, 30, 40, 50, 60, 70, 80, Inf], rawData, features)
+            #
+            # # Categorical features
+            #
+            # features.PC = ifelse.(rawData.pc .== "abnormal", 1, 0)
+            # features.PCC = ifelse.(rawData.pcc .== "present", 1, 0)
+            # features.BA = ifelse.(rawData.ba .== "present", 1, 0)
+            # features.HTN = ifelse.(rawData.htn .== "yes", 1, 0)
+            # features.DM = ifelse.(rawData.dm .== "yes", 1, 0)
+            # features.CAD = ifelse.(rawData.cad .== "yes", 1, 0)
+            # features.PE = ifelse.(rawData.pe .== "yes", 1, 0)
+            # features.ANE = ifelse.(rawData.ane .== "yes", 1, 0)
+            # features.APPET = ifelse.(rawData.appet .== "good", 1, 0)
+            #
+            # # Discrete features
+            #
+            # for a in sort(unique(rawData.bp))
+            #     # Create 1 feature column named "BP50", "BP60", "BP70", "BP80", "BP90", "BP100" or "BP110"
+            #     features[!, Symbol("BP", a)] = ifelse.(rawData.bp .<= a, 1, 0)
+            # end
+            #
+            # for a in sort(unique(rawData.sg))
+            #     # Create 1 feature column named "SG05", "SG1", "SG15", "SG2" or "SG25"
+            #     features[!, Symbol("SG", a)] = ifelse.(rawData.sg .<= a, 1, 0)
+            # end
+            #
+            # for a in sort(unique(rawData.al))
+            #     # Create 1 feature column named "AL0", "AL1", "AL2", "AL3" or "AL4"
+            #     features[!, Symbol("AL", a)] = ifelse.(rawData.al .<= a, 1, 0)
+            # end
+            #
+            # for a in sort(unique(rawData.su))
+            #     # Create 1 feature column named "SU0", "SU1", "SU2", "SU3", "SU4" or "SU5"
+            #     features[!, Symbol("SU", a)] = ifelse.(rawData.su .<= a, 1, 0)
+            # end
+            #
+            # # Continuous features
+            #
+            # createColumns(:bgr, [0, 100, 125, 150, 175, 200, 250, 300, 400, 450, Inf], rawData, features)
+            # createColumns(:bu, [0, 25, 50, 75, 100, 125, 150, 175, 200, 225, 250, Inf], rawData, features)
+            # createColumns(:sc, [0, 1, 2, 3, 4, 6, 8, 10, 12, Inf], rawData, features)
+            # createColumns(:sod, [0, 115, 120, 125, 130, 135, 140, 145, Inf], rawData, features)
+            # createColumns(:pot, [0, 5, 10, Inf], rawData, features)
+            # createColumns(:hemo, [0, 4, 6, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, Inf], rawData, features)
+            # createColumns(:pcv, [0, 10, 20, 25, 30, 35, 40, 45, 50, Inf], rawData, features)
+            # createColumns(:wbcc, [0, 5000, 7500, 10000, 12500, 15000, 20000, Inf], rawData, features)
+            # createColumns(:rbcc, [0, 2.5, 3, 3.5, 4, 4.5, 5, 5.5, 6, 6.5, 7, Inf], rawData, features)
 
         end
 
@@ -210,16 +217,44 @@ function createFeatures(dataFolder::String, dataSet::String, delete)
             #TODO
         end
 
-        # Shuffle the individuals
-        features = features[shuffle(1:size(features, 1)),:]
+        if respect == true
 
-        # Split them between train and test
-        trainLimit = trunc(Int, size(features, 1) * 2/3)
-        train = features[1:trainLimit, :]
-        test = features[(trainLimit+1):end, :]
+            # Separate between ill and healthy and shuffle the individuals
 
-        CSV.write(trainDataPath, train)
-        CSV.write(testDataPath, test)
+            featuresIll = features[features.Class .== 1,:]
+            featuresIll = featuresIll[shuffle(1:size(featuresIll, 1)),:]
+
+            featuresHealthy = features[features.Class .== 0,:]
+            featuresHealthy = featuresHealthy[shuffle(1:size(featuresHealthy, 1)),:]
+
+            # Split them between train and test
+
+            trainLimitIll = trunc(Int, size(featuresIll, 1) * 2/3)
+            trainIll = featuresIll[1:trainLimitIll, :]
+            testIll = featuresIll[(trainLimitIll+1):end, :]
+
+            trainLimitHealthy = trunc(Int, size(featuresHealthy, 1) * 2/3)
+            trainHealthy = featuresHealthy[1:trainLimitHealthy, :]
+            testHealthy = featuresHealthy[(trainLimitHealthy+1):end, :]
+
+            # Merge them
+
+            train = vcat(trainIll, trainHealthy)
+            train = train[shuffle(1:size(train, 1)),:]
+            test = vcat(testIll, testHealthy)
+            test = test[shuffle(1:size(test, 1)),:]
+
+        else
+
+            # Shuffle the individuals
+            features = features[shuffle(1:size(features, 1)),:]
+
+            # Split them between train and test
+            trainLimit = trunc(Int, size(features, 1) * 2/3)
+            train = features[1:trainLimit, :]
+            test = features[(trainLimit+1):end, :]
+
+        end
 
     # If the train and test file already exist
     else
@@ -610,10 +645,6 @@ function showStatistics(orderedRules::DataFrames.DataFrame, dataSet::DataFrames.
     println("avg\t", round(mean(precision), digits=2), "\t", round(mean(recall), digits=2))
     println("w. avg\t", round(sum(precision.*classSize)/size(dataSet, 1), digits = 2), "\t", round(sum(recall.*classSize)/size(dataSet, 1), digits = 2), "\n")
 
-    println("TP", tp)
-    println("FP", fp)
-    println("FN", fn)
-
     # precision = Array{Float64, 1}([tp / (tp+fp), tn / (tn+fn)])
     # recall = Array{Float64, 1}([tp / (tp + fn), tn / (tn + fp)])
 
@@ -624,6 +655,7 @@ function showStatistics(orderedRules::DataFrames.DataFrame, dataSet::DataFrames.
     # println("w. avg\t", round(precision[1] * classSize[1] / size(dataSet, 1) + precision[2] * classSize[2] / size(dataSet, 1), digits = 2), "\t", round(recall[1] * classSize[1] / size(dataSet, 1) + recall[2] * classSize[2] / size(dataSet, 1), digits = 2), "\n")
 
 end
+
 
 function showStatisticsoriginal(orderedRules::DataFrames.DataFrame, dataSet::DataFrames.DataFrame)
 

@@ -14,7 +14,7 @@ using Statistics
 
 include("functionsMultiObj.jl")
 
-dataSet = "kidney" # "multiclass_multiobj" or "multiobj_kidney"
+dataSet = "multiobj_kidney" # "multiclass_multiobj" or "multiobj_kidney"
 dataFolder = "./data/"
 resultsFolder = "./res/"
 
@@ -23,8 +23,9 @@ resultsFolder = "./res/"
 # Details:
 # - read the file ./data/kidney.csv
 # - save the features in ./data/kidney_test.csv and ./data/kidney_train.csv
-deleteData = false
-train, test = createFeatures(dataFolder, dataSet, deleteData)
+deleteData = true
+respectProp = false
+train, test = createFeatures(dataFolder, dataSet, deleteData, respectProp)
 
 # Create the rules (or load them if they already exist)
 # Note: each line corresponds to a rule, the first column corresponds to the class
