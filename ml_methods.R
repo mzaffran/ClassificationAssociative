@@ -12,7 +12,7 @@ recall <- function(y_true, y_pred, class){
   return(VP / (VP+FN))
 }
 
-library('tidyverse')
+#library('tidyverse')
 library(rpart)
 
 # Import des échantillons de d'apprentissage et de test
@@ -24,20 +24,16 @@ test$Class = as.factor(test$Class)
 names(train) = make.names(names(train))
 names(test) = make.names(names(test))
 
-# Arbre maximal
+# Arbre CART
 
-init_tree = rpart(Class ~ ., data = train, method = "class")
-plot(init_tree)
-text(init_tree,cex=1)
-print(init_tree)
-
+t1 = Sys.time()
 max_tree = rpart(Class ~ ., data = train, method = "class", control = rpart.control(cp = 0))
-plot(max_tree)
-text(max_tree,cex=.7)
-print(max_tree)
+tree_elag = prune(max_tree, cp = max_tree$cptable[which.min(max_tree$cptable[,4]),1])
+t2 = Sys.time()
+print(t2-t1)
 
-class_train_tree = predict(max_tree, type = "class")
-class_test_tree = predict(max_tree, newdata = test, type = "class")
+class_train_tree = predict(tree_elag, type = "class")
+class_test_tree = predict(tree_elag, newdata = test, type = "class")
 
 precision(train$Class, class_train_tree, 0)
 recall(train$Class, class_train_tree, 0)
@@ -55,7 +51,11 @@ recall(test$Class, class_test_tree, 1)
 
 library(randomForest)
 
+t1 = Sys.time()
 rf = randomForest(Class ~ ., data = train, importance = TRUE)
+t2 = Sys.time()
+print(t2-t1)
+
 class_train_rf = predict(rf, type = "class")
 class_test_rf = predict(rf, newdata = test, type = "class")
 
@@ -71,7 +71,7 @@ recall(test$Class, class_test_rf, 0)
 precision(test$Class, class_test_rf, 1)
 recall(test$Class, class_test_rf, 1)
 
-varImpPlot(rf)
+#varImpPlot(rf)
 
 # RF toutes les données
 
