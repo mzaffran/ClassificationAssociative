@@ -37,12 +37,13 @@ Modifier le fichier ```main.jl``` pour :
 - pour lancer ORC avec notre choix de binarisation, mettre ```dataSet = kidney``` ;
 - pour lancer ORC avec toutes les variables binarisées selon leurs histogrammes, mettre ```dataSet = kidneyAll``` ;
 - pour lancer ORC avec toutes les variables binarisées naïvement, mettre ```dataSet = kidneyAllGreedy``` ;
-- pour lancer un ORC multiclasses sur la variable SG, mettre ```dataSet = multiclass``` (si vous avez nettoyé le dossier ```data``` ou simplement supprimé le fichier ```data/multiclass.csv``` alors il faut au préalable exécuter le script python ```create_multiclass.py```).
+- pour lancer un ORC multiclasses sur la variable SG, mettre ```dataSet = multiclass``` (si vous avez nettoyé le dossier ```data``` ou simplement supprimé le fichier ```data/multiclass.csv``` alors il faut au préalable exécuter le script python ```create_multiclass.py```).;
+
 Executer ensuite ```include("src/main.jl")``` dans un terminal Julia.
 
 __ORC bi-objectif__
 
-Modifier le fichier ```main.jl``` pour :
+Modifier le fichier ```mainMultiObj.jl``` pour :
 - adapter la variable ```respectProp``` (_true_ si on veut imposer le respect des proportions des classes lors de la séparation train/test, _false_ sinon) ;
 - mettre les variables ```deleteData```, ```deleteCreate``` et ```deleteSort``` à _true_ pour réaliser de nouvelles expériences, sinon l'algorithme utilisera les fichiers déjà présents dans les dossiers ```data``` et ```res```, et mettre ```dataSet = kidneyMultiObj``` ;
 - pour lancer un nouvel ORC bi-objectif avec les train et test générés lors d'une exécution précédente d'ORC classique, mettre ```dataSet = kidney```, ```deleteData = false```, ```deleteCreate = false``` et ```deleteSort = false``` ;
