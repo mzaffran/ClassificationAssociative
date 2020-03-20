@@ -1,5 +1,19 @@
 # ClassificationAssociative
 
+_Auteurs : Walid Makhlouf et Margaux Zaffran_
+
+Projet pour le cours SOD322 : Recherche opérationnelle et données massives, partie de Zacharie Ales.
+
+## Dépendances
+
+### Julia
+
+### Python
+
+### R
+
+## Mode opérationnel
+
 Afin de reproduire les  résultats présentés dans le notebook, il faut :
 
 __ORC__
@@ -22,10 +36,10 @@ Modifier le fichier ```main.jl``` pour :
 
 Executer ensuite ```include("src/mainMultiObj.jl")``` dans un terminal Julia.
 
-__Méthodes ML___
+__Méthodes ML__
 
 Pour comparer ces algorithmes aux méthodes CART et random forest, les codes sont disponibles dans ```ml_methods.R```.
 
 Pour comparer ces algorithmes aux méthodes SVC et AdaBoost, les codes sont disponibles dans ```ml_methods.py```.
 
-Ces codes récupèrent par défaut les train et test nommés ```kidney_train.csv``` et ```kidney_test.csv``` dans ```data```. En principe, c'est donc les jeux de train et test générés par l'ORC auquel nous souhaitons nous comparer. 
+Ces codes récupèrent par défaut les train et test nommés ```kidney_train.csv``` et ```kidney_test.csv``` dans ```data```. En principe, c'est donc les jeux de train et test générés par l'ORC auquel nous souhaitons nous comparer.
