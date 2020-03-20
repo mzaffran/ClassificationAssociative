@@ -30,7 +30,7 @@ Arguments:
 
 Important remark: the first column of the output files must correspond to the class of each individual (and it must be 0 or 1)
 """
-function createFeatures(dataFolder::String, dataSet::String, delete)
+function createFeatures(dataFolder::String, dataSet::String, delete, respect)
 
     # Get the input file path
     rawDataPath = dataFolder * dataSet * ".csv"
@@ -217,13 +217,44 @@ function createFeatures(dataFolder::String, dataSet::String, delete)
 
         end
 
-        # Shuffle the individuals
-        features = features[shuffle(1:size(features, 1)),:]
+        if respect == true
 
-        # Split them between train and test
-        trainLimit = trunc(Int, size(features, 1) * 2/3)
-        train = features[1:trainLimit, :]
-        test = features[(trainLimit+1):end, :]
+            # Separate between ill and healthy and shuffle the individuals
+
+            featuresIll = features[features.Class .== 1,:]
+            featuresIll = featuresIll[shuffle(1:size(featuresIll, 1)),:]
+
+            featuresHealthy = features[features.Class .== 0,:]
+            featuresHealthy = featuresHealthy[shuffle(1:size(featuresHealthy, 1)),:]
+
+            # Split them between train and test
+
+            trainLimitIll = trunc(Int, size(featuresIll, 1) * 2/3)
+            trainIll = featuresIll[1:trainLimitIll, :]
+            testIll = featuresIll[(trainLimitIll+1):end, :]
+
+            trainLimitHealthy = trunc(Int, size(featuresHealthy, 1) * 2/3)
+            trainHealthy = featuresHealthy[1:trainLimitHealthy, :]
+            testHealthy = featuresHealthy[(trainLimitHealthy+1):end, :]
+
+            # Merge them
+
+            train = vcat(trainIll, trainHealthy)
+            train = train[shuffle(1:size(train, 1)),:]
+            test = vcat(testIll, testHealthy)
+            test = test[shuffle(1:size(test, 1)),:]
+
+        else
+
+            # Shuffle the individuals
+            features = features[shuffle(1:size(features, 1)),:]
+
+            # Split them between train and test
+            trainLimit = trunc(Int, size(features, 1) * 2/3)
+            train = features[1:trainLimit, :]
+            test = features[(trainLimit+1):end, :]
+
+        end
 
         CSV.write(trainDataPath, train)
         CSV.write(testDataPath, test)

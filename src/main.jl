@@ -17,7 +17,8 @@ resultsFolder = "./res/"
 # - read the file ./data/kidney.csv
 # - save the features in ./data/kidney_test.csv and ./data/kidney_train.csv
 deleteData = true
-train, test = createFeatures(dataFolder, dataSet, deleteData)
+respectProp = true
+train, test = createFeatures(dataFolder, dataSet, deleteData, respectProp)
 
 # Create the rules (or load them if they already exist)
 # Note: each line corresponds to a rule, the first column corresponds to the class
