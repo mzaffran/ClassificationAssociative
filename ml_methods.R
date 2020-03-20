@@ -1,3 +1,5 @@
+rm(list=objects())
+graphics.off()
 setwd('/Users/margauxzaffran/Documents/ENSTA/3A/SOD322/ClassificationAssociative')
 
 precision <- function(y_true, y_pred, class){
@@ -12,7 +14,6 @@ recall <- function(y_true, y_pred, class){
   return(VP / (VP+FN))
 }
 
-#library('tidyverse')
 library(rpart)
 
 # Import des échantillons de d'apprentissage et de test

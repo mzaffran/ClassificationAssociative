@@ -1,4 +1,4 @@
-# ClassificationAssociative
+# Classification Associative
 
 _Auteurs : Walid Makhlouf et Margaux Zaffran_
 
@@ -8,9 +8,22 @@ Projet pour le cours SOD322 : Recherche opérationnelle et données massives, pa
 
 ### Julia
 
+- JuMP (version 21.1)
+- CPLEX
+- DataFrames
+- CSV
+
 ### Python
 
+- pandas
+- sklearn
+- matplotlib
+
 ### R
+
+- corrplot
+- randomForest
+- rpart
 
 ## Mode opérationnel
 
@@ -38,7 +51,7 @@ Executer ensuite ```include("src/mainMultiObj.jl")``` dans un terminal Julia.
 
 __Méthodes ML__
 
-Pour comparer ces algorithmes aux méthodes CART et random forest, les codes sont disponibles dans ```ml_methods.R```.
+Pour comparer ces algorithmes aux méthodes CART et random forest, les codes sont disponibles dans ```ml_methods.R```. Ne pas oublier de modifier la troisième ligne ```setwd``` en mettant le bon chemin vers le bon répertoire.
 
 Pour comparer ces algorithmes aux méthodes SVC et AdaBoost, les codes sont disponibles dans ```ml_methods.py```.
 

@@ -1,3 +1,5 @@
+rm(list=objects())
+graphics.off()
 setwd('/Users/margauxzaffran/Documents/ENSTA/3A/SOD322/ClassificationAssociative')
 
 precision <- function(y_true, y_pred, class){
@@ -11,8 +13,6 @@ recall <- function(y_true, y_pred, class){
   FN <- sum(y_pred[y_true == class] != class)
   return(VP / (VP+FN))
 }
-
-library('tidyverse')
 
 data <- read_csv('data/kidney.csv')
 summary(data)
