@@ -6,15 +6,15 @@ using Random
 using Pkg
 
 Pkg.activate(pwd())
-Pkg.add(PackageSpec(name="JuMP", version="0.18.6"))
-#Pkg.add(PackageSpec(name="vOptGeneric"))
+#Pkg.add(PackageSpec(name="JuMP", version="0.18.6"))
+Pkg.add(PackageSpec(name="vOptGeneric"))
 using JuMP
 using vOptGeneric
 using Statistics
 
 include("functionsMultiObj.jl")
 
-dataSet = "multiclass_multiobj" # "multiclass_multiobj" or "multiobj_kidney"
+dataSet = "kidney" # "multiclass_multiobj" or "multiobj_kidney"
 dataFolder = "./data/"
 resultsFolder = "./res/"
 
@@ -23,21 +23,33 @@ resultsFolder = "./res/"
 # Details:
 # - read the file ./data/kidney.csv
 # - save the features in ./data/kidney_test.csv and ./data/kidney_train.csv
-train, test = createFeatures(dataFolder, dataSet)
+deleteData = false
+train, test = createFeatures(dataFolder, dataSet, deleteData)
 
 # Create the rules (or load them if they already exist)
 # Note: each line corresponds to a rule, the first column corresponds to the class
 # Details:
 # - read the file ./data/kidney_train.csv
 # - save the rules in ./res/kidney_rules.csv
-rules = createRules(dataSet, resultsFolder, train)
+timeLimitInSecondsCreate = 600
+deleteCreate = true
+t1 = time_ns()
+rules = createRules(dataSet, resultsFolder, train, timeLimitInSecondsCreate, deleteCreate)
+t2 = time_ns()
+println("-- Elapsed time to generate rules ",(t2-t1)/1.0e9, "s")
 
 # Order the rules (limit the resolution to 300 seconds)
 # Details:
 # - read the file ./data/kidney_rules.csv
 # - save the rules in ./res/kidney_ordered_rules.csv
-timeLimitInSeconds = 600
-orderedRules = sortRules(dataSet, resultsFolder, train, rules, timeLimitInSeconds)
+timeLimitInSecondsSort = 600
+deleteSort = true
+t1 = time_ns()
+orderedRules = sortRules(dataSet, resultsFolder, train, rules, timeLimitInSecondsSort, deleteSort)
+t2 = time_ns()
+println("-- Elapsed time to order rules ",(t2-t1)/1.0e9, "s")
+
+println("=== Results")
 
 println("-- Train results")
 showStatistics(orderedRules, train)

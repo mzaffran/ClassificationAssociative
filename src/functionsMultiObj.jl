@@ -30,7 +30,7 @@ Arguments:
 
 Important remark: the first column of the output files must correspond to the class of each individual (and it must be 0 or 1)
 """
-function createFeatures(dataFolder::String, dataSet::String)
+function createFeatures(dataFolder::String, dataSet::String, delete)
 
     # Get the input file path
     rawDataPath = dataFolder * dataSet * ".csv"
@@ -49,7 +49,7 @@ function createFeatures(dataFolder::String, dataSet::String)
     testDataPath = dataFolder * dataSet * "_test.csv"
 
     # If the train or the test file do not exist
-    if !isfile(trainDataPath) || !isfile(testDataPath)
+    if !isfile(trainDataPath) || !isfile(testDataPath) || delete == true
 
         println("=== Creating the features")
 
@@ -248,13 +248,13 @@ Arguments
 Output
  - table of rules (each line is a rule, the first column corresponds to the rules class)
 """
-function createRules(dataSet::String, resultsFolder::String, train::DataFrames.DataFrame)
+function createRules(dataSet::String, resultsFolder::String, train::DataFrames.DataFrame, tilim::Int64, delete)
 
     # Output file
     rulesPath = resultsFolder * dataSet * "_rules.csv"
     rules = []
 
-    if !isfile(rulesPath)
+    if !isfile(rulesPath) || delete == true
 
         println("=== Generating the rules")
 
@@ -295,26 +295,26 @@ function createRules(dataSet::String, resultsFolder::String, train::DataFrames.D
             s=0
 
             println("-- Classe $y")
-            m = vModel(solver = CplexSolver(CPX_PARAM_SCRIND=0))
+            m = vModel(solver = CplexSolver(CPX_PARAM_SCRIND=0, CPX_PARAM_TILIM=tilim))
 
- 
+
             @variable(m,x[i in 1:n], Bin)
             @variable(m,b[i in 1:d] , Bin)
 
             @constraint(m, [i=1:n,j=1:d  ], x[i]<=1+(t[i,j]-1)*b[j]) # Si b[j] est dans la regle et i ne satisfait pas b[j] => x[i] = 0
             @constraint(m, [i=1:n  ], x[i]>=1+sum( (t[i,j]-1)*b[j] for j in 1:d )) # Si  i satisfat b => x[i]=1
-            
-            
+
+
             @addobjective(m, Max, sum( x[i] for i in 1:n if transactionClass[i,1]==y )- RgenX*sum( x[i] for i in 1:n ) -RgenB*sum(b[j] for j in 1:d) )
             #@addobjective(m, Max, sum( x[i] for i in 1:n if transactionClass[i,1]==y )  )
             @addobjective(m,  Min, sum(x[i] for  i in 1:n ) )
-        
-  
-          
+
+
+
 
             solve(m, method=:dichotomy)
             Y_N = getY_N(m)
-    
+
             for indi = 1:length(Y_N)
                 X = vOptGeneric.getvalue(x, indi)
                 B = vOptGeneric.getvalue(b,indi)
@@ -365,11 +365,11 @@ Arguments
   - rules: rules which must be sorted (1 row = 1 rule)
   - tilim: maximal running time of CPLEX in seconds
 """
-function sortRules(dataSet::String, resultsFolder::String, train::DataFrames.DataFrame, rules::DataFrames.DataFrame, tilim::Int64)
+function sortRules(dataSet::String, resultsFolder::String, train::DataFrames.DataFrame, rules::DataFrames.DataFrame, tilim::Int64, delete)
 
     orderedRulesPath = resultsFolder * dataSet * "_ordered_rules.csv"
 
-    if !isfile(orderedRulesPath)
+    if !isfile(orderedRulesPath) || delete == true
 
         println("=== Sorting the rules")
 
@@ -431,7 +431,7 @@ function sortRules(dataSet::String, resultsFolder::String, train::DataFrames.Dat
         ################
         # Create and solve the model
         ###############
-        m = Model(solver= CplexSolver(CPX_PARAM_TILIM=500) )
+        m = Model(solver= CplexSolver(CPX_PARAM_SCRIND=0, CPX_PARAM_TILIM=tilim) )
         #set_parameter(m, "CPX_PARAM_TILIM", tilim)
 
         # u_il: rule l is the highest which applies to transaction i
