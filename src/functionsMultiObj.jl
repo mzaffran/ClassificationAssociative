@@ -358,19 +358,12 @@ function createRules(dataSet::String, resultsFolder::String, train::DataFrames.D
                 push!(rules,rule)
             end
 
-
-
-
-            #TODO
-
             # Help: Let rule be a rule that you want to add to rules
             # - if it is the first rule, use: rules = rule
             # - if it is not the first rule, use: rules = append!(rules, rule)
         end
 
-        println("fin")
         df = train[1:1,:] # initialiser avec une ligne quelconque
-
 
         for i=1:size(rules,1)
             push!(df,rules[i])
@@ -575,19 +568,10 @@ function showStatistics(orderedRules::DataFrames.DataFrame, dataSet::DataFrames.
     classMax = maximum(train[:,1])
     classNb = classMax + 1
 
-    # Statistics with respect to class 0:
-    # - true positive;
-    # - true negative;
-    # - false positive;
-    # - false negative
-    # tp::Int = 0
-    # fp::Int = 0
-    # fn::Int = 0
-    # tn::Int = 0
     tp = Array{Int, 1}(zeros(classNb))
     fp = Array{Int, 1}(zeros(classNb))
     fn = Array{Int, 1}(zeros(classNb))
-    #
+
     # Number of individuals in each class
     # classSize = Array{Int, 1}([0, 0])
     classSize = Array{Int, 1}(zeros(classNb))
@@ -608,30 +592,6 @@ function showStatistics(orderedRules::DataFrames.DataFrame, dataSet::DataFrames.
             classSize[dataSet[i, 1] + 1] += 1
         end
 
-        # # If transaction i is classified correctly (i.e., if it is a true)
-        # if orderedRules[ruleId, 1] == dataSet[i, 1]
-        #
-        #     # If transaction i is of class 0
-        #     if dataSet[i, 1] == 0
-        #         tp += 1
-        #         classSize[1] += 1
-        #     else
-        #         tn += 1
-        #         classSize[2] += 1
-        #     end
-        #
-        #     # If it is a negative
-        # else
-        #
-        #     # If transaction i is of class 0
-        #     if dataSet[i, 1] == 0
-        #         fn += 1
-        #         classSize[1] += 1
-        #     else
-        #         fp += 1
-        #         classSize[2] += 1
-        #     end
-        # end
     end
 
     precision = Array{Float64, 1}(tp./(tp+fp))
