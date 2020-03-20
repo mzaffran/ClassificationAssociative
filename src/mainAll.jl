@@ -16,7 +16,7 @@ resultsFolder = "./res/"
 # Details:
 # - read the file ./data/kidney.csv
 # - save the features in ./data/kidney_test.csv and ./data/kidney_train.csv
-deleteData = true
+deleteData = false
 respectProp = true
 train, test = createFeatures(dataFolder, dataSet, deleteData, respectProp)
 
@@ -26,7 +26,7 @@ train, test = createFeatures(dataFolder, dataSet, deleteData, respectProp)
 # - read the file ./data/kidney_train.csv
 # - save the rules in ./res/kidney_rules.csv
 timeLimitInSecondsCreate = 600
-deleteCreate = true
+deleteCreate = false
 t1 = time_ns()
 rules = createRules(dataSet, resultsFolder, train, timeLimitInSecondsCreate, deleteCreate)
 t2 = time_ns()
@@ -39,7 +39,7 @@ end
 # - read the file ./data/kidney_rules.csv
 # - save the rules in ./res/kidney_ordered_rules.csv
 timeLimitInSecondsSort = 600
-deleteSort = true
+deleteSort = false
 t1 = time_ns()
 orderedRules = sortRules(dataSet, resultsFolder, train, rules, timeLimitInSecondsSort, deleteSort)
 t2 = time_ns()
